@@ -2,49 +2,44 @@
 using namespace std;
 
 const int maxn=1e5+10;
+char a[maxn],b[maxn];
 int nex[maxn];
 
-int KmpSearch(char* s,char* p)  
-{  
-    int i=0,j=0;
-    int sLen=strlen(s),pLen=strlen(p);
-    while (i<sLen && j<pLen)
+void make_next(int m)
+{
+    nex[0]=0;
+    int k=0;
+    for (int i=1;i<m;i++)
     {
-        if (j==-1 || s[i]==p[j]) {i++;j++;}
-            else j=nex[j];
+        while (k>0 && b[i]!=b[k]) k=nex[k-1];
+        if (b[i]==b[k]) ++k;
+        nex[i]=k;
     }
-    if (j==pLen)  return i-j;
-        else return -1;
 }
 
-void GetNextval(char* p, int nex[])
-{  
-    int pLen=strlen(p);
-    nex[0]=-1;
-    int k=-1;
-    int j=0;
-    while (j<pLen-1)
+int check(int n,int m)
+{
+    if (m>n) return 0;
+    make_next(m);
+    int k=0,ans=0;
+    for (int i=0;i<n;i++)
     {
-        if (k==-1 || p[j]==p[k])
-        {
-            ++j;++k;
-            if (p[j]!=p[k]) nex[j]=k;
-            else nex[j]=nex[k];
-        }
-        else k=nex[k];
+        while (k>0 && a[i]!=b[k]) k=nex[k-1];
+        if (a[i]==b[k]) ++k;
+        if (k==m) {k=nex[k-1];ans++;}
     }
+    return ans;
 }
 
 int main()
 {
-    /*freopen("main.in","r",stdin);
-    freopen("main.out","w",stdout);*/
+    freopen("main.in","r",stdin);
+    freopen("main.out","w",stdout);
 
 	//where b appear in a
-    char a[10],b[10];
     scanf("%s",a);scanf("%s",b);
-    GetNextval(b,nex);
-    printf("%d\n",KmpSearch(a,b));
+    int n=strlen(a),m=strlen(b);
+    printf("%d\n",check(n,m));
 
     return 0;
 }
